@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShiftPro — Employee Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d0f17;
+  --bg2: #12151f;
+  --bg3: #181c29;
+  --surface: #1e2335;
+  --surface2: #252b40;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8eaf2;
+  --text2: #9aa0b8;
+  --text3: #636b8a;
+  --blue: #4f8ef7;
+  --blue-dim: rgba(79,142,247,0.15);
+  --green: #3ecf8e;
+  --green-dim: rgba(62,207,142,0.15);
+  --orange: #f7934f;
+  --orange-dim: rgba(247,147,79,0.15);
+  --purple: #a78bfa;
+  --purple-dim: rgba(167,139,250,0.15);
+  --red: #f76f6f;
+  --red-dim: rgba(247,111,111,0.15);
+  --sidebar-w: 240px;
+  --topbar-h: 62px;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+html { font-size: 15px; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  overflow-x: hidden;
+}
+
+/* ─── SIDEBAR ─────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 200;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.brand-icon {
+  font-size: 22px;
+  color: var(--blue);
+  line-height: 1;
+}
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 16px 0;
+  overflow-y: auto;
+}
+.nav-section-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text3);
+  padding: 12px 20px 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-item.active {
+  color: var(--blue);
+  background: var(--blue-dim);
+  border-left-color: var(--blue);
+}
+.nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+}
+.user-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.user-name { font-size: 0.85rem; font-weight: 600; }
+.user-role { font-size: 0.75rem; color: var(--text3); }
+
+/* ─── MAIN CONTENT ───────────────────────── */
+.main-content {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  height: var(--topbar-h);
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky; top: 0; z-index: 100;
+  gap: 16px;
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; }
+.page-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.menu-toggle {
+  display: none;
+  background: none; border: none;
+  color: var(--text2); font-size: 1.3rem; cursor: pointer;
+}
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.search-box input {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  width: 220px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-box input:focus { border-color: var(--blue); }
+.search-box input::placeholder { color: var(--text3); }
+.notif-btn {
+  background: var(--surface); border: 1px solid var(--border2);
+  color: var(--text); padding: 8px 12px; border-radius: 8px;
+  cursor: pointer; position: relative; font-size: 0.85rem;
+}
+.notif-badge {
+  position: absolute; top: -4px; right: -4px;
+  background: var(--red); color: #fff;
+  font-size: 0.65rem; width: 16px; height: 16px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+}
+.date-display {
+  font-size: 0.8rem; color: var(--text3);
+  white-space: nowrap;
+}
+
+/* ─── PAGE CONTAINER ─────────────────────── */
+.page-container { padding: 24px; flex: 1; }
+.page { display: none; animation: fadeIn 0.25s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+/* ─── CARDS ──────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ─── STATS GRID ─────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  opacity: 0.12;
+  transform: translate(20px, -20px);
+}
+.accent-blue { background: var(--blue-dim); border-color: rgba(79,142,247,0.2); }
+.accent-blue::before { background: var(--blue); }
+.accent-green { background: var(--green-dim); border-color: rgba(62,207,142,0.2); }
+.accent-green::before { background: var(--green); }
+.accent-orange { background: var(--orange-dim); border-color: rgba(247,147,79,0.2); }
+.accent-orange::before { background: var(--orange); }
+.accent-purple { background: var(--purple-dim); border-color: rgba(167,139,250,0.2); }
+.accent-purple::before { background: var(--purple); }
+
+.stat-label { font-size: 0.78rem; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 2rem; font-weight: 800;
+  margin: 6px 0 4px;
+  color: var(--text);
+}
+.stat-sub { font-size: 0.75rem; color: var(--text3); }
+
+/* ─── DASHBOARD GRID ─────────────────────── */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+/* ─── BADGES ─────────────────────────────── */
+.badge {
+  font-size: 0.72rem; font-weight: 700; padding: 3px 10px;
+  border-radius: 20px; display: inline-block;
+}
+.badge-blue { background: var(--blue-dim); color: var(--blue); }
+.badge-green { background: var(--green-dim); color: var(--green); }
+.badge-orange { background: var(--orange-dim); color: var(--orange); }
+.badge-red { background: var(--red-dim); color: var(--red); }
+.badge-purple { background: var(--purple-dim); color: var(--purple); }
+.badge-gray { background: rgba(255,255,255,0.06); color: var(--text2); }
+
+/* ─── TABLES ─────────────────────────────── */
+.table-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table thead { background: var(--bg3); }
+.data-table th {
+  padding: 12px 16px; text-align: left;
+  font-size: 0.75rem; font-weight: 700;
+  color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 12px 16px; font-size: 0.88rem;
+  border-top: 1px solid var(--border);
+  color: var(--text2);
+  vertical-align: middle;
+}
+.data-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+.data-table td strong { color: var(--text); font-weight: 600; }
+
+/* ─── BUTTONS ────────────────────────────── */
+.btn {
+  padding: 9px 18px; border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; border: none; transition: all 0.2s; white-space: nowrap;
+}
+.btn-primary {
+  background: var(--blue);
+  color: #fff;
+}
+.btn-primary:hover { background: #3d7ef5; transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--text);
+}
+.btn-secondary:hover { background: var(--surface); }
+.btn-success {
+  background: var(--green-dim); border: 1px solid rgba(62,207,142,0.3);
+  color: var(--green); padding: 6px 12px; font-size: 0.78rem;
+}
+.btn-danger {
+  background: var(--red-dim); border: 1px solid rgba(247,111,111,0.3);
+  color: var(--red); margin-top: 8px;
+}
+.btn-warn {
+  background: var(--orange-dim); border: 1px solid rgba(247,147,79,0.3);
+  color: var(--orange); padding: 6px 12px; font-size: 0.78rem;
+}
+.btn-sm { padding: 5px 10px; font-size: 0.78rem; }
+.btn-icon { background: none; border: none; cursor: pointer; font-size: 1rem; }
+
+/* ─── PAGE ACTIONS ───────────────────────── */
+.page-actions {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; gap: 12px; flex-wrap: wrap;
+}
+.filters { display: flex; gap: 10px; flex-wrap: wrap; }
+.filter-select {
+  background: var(--surface); border: 1px solid var(--border2);
+  color: var(--text); padding: 8px 12px; border-radius: 8px;
+  font-family: var(--font-body); font-size: 0.85rem; outline: none;
+  cursor: pointer;
+}
+.filter-select:focus { border-color: var(--blue); }
+.attendance-actions { display: flex; gap: 8px; }
+
+/* ─── FORM ───────────────────────────────── */
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block; font-size: 0.8rem; font-weight: 600;
+  color: var(--text2); margin-bottom: 6px;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: var(--bg3); border: 1px solid var(--border2);
+  color: var(--text); padding: 10px 14px;
+  border-radius: 8px; font-family: var(--font-body); font-size: 0.88rem;
+  outline: none; transition: border-color 0.2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--blue); }
+.form-input::placeholder { color: var(--text3); }
+.form-textarea { min-height: 80px; resize: vertical; }
+.form-select { cursor: pointer; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ─── MODAL ──────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  width: 520px; max-width: 95vw;
+  max-height: 85vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  animation: modalIn 0.25s ease;
+}
+@keyframes modalIn {
+  from { opacity:0; transform:scale(0.95) translateY(-10px); }
+  to { opacity:1; transform:none; }
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-title {
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 700;
+}
+.modal-close {
+  background: none; border: none; color: var(--text3);
+  font-size: 1.1rem; cursor: pointer; padding: 4px;
+  transition: color 0.2s;
+}
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 20px 24px; }
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+/* ─── TOAST ──────────────────────────────── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 2000;
+  background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--text); padding: 12px 20px;
+  border-radius: 10px; font-size: 0.88rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transform: translateY(20px); opacity: 0;
+  transition: all 0.3s; pointer-events: none;
+}
+.toast.show { transform: none; opacity: 1; }
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--red); }
+.toast.info { border-left: 3px solid var(--blue); }
+
+/* ─── SHIFT LIST ─────────────────────────── */
+.shift-list { display: flex; flex-direction: column; gap: 10px; }
+.shift-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--bg3); border-radius: 8px;
+  font-size: 0.85rem;
+}
+.shift-item-name { font-weight: 600; color: var(--text); }
+.shift-item-time { color: var(--text3); font-size: 0.78rem; }
+.shift-item-count { font-size: 0.78rem; }
+
+/* ─── ACTIVITY LIST ──────────────────────── */
+.activity-list { display: flex; flex-direction: column; gap: 8px; }
+.activity-item {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 0.85rem; padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.activity-text { color: var(--text2); flex: 1; }
+.activity-time { color: var(--text3); font-size: 0.75rem; }
+
+/* ─── MINI CHART ─────────────────────────── */
+.mini-chart {
+  display: flex; align-items: flex-end; gap: 6px;
+  height: 80px; padding-top: 10px;
+}
+.chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.chart-bar {
+  width: 100%; background: var(--blue-dim);
+  border: 1px solid rgba(79,142,247,0.3);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.6s ease;
+  min-height: 4px;
+}
+.chart-label { font-size: 0.68rem; color: var(--text3); }
+
+/* ─── LEAVE MINI LIST ────────────────────── */
+.leave-mini-list { display: flex; flex-direction: column; gap: 8px; }
+.leave-mini-item {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.83rem;
+  padding: 8px 12px;
+  background: var(--bg3); border-radius: 8px;
+}
+.leave-mini-name { font-weight: 600; color: var(--text); }
+.leave-mini-date { color: var(--text3); font-size: 0.75rem; }
+
+/* ─── SHIFT TABS ─────────────────────────── */
+.shift-tabs { display: flex; gap: 4px; background: var(--surface); border-radius: 8px; padding: 4px; }
+.shift-tab {
+  padding: 7px 16px; border-radius: 6px;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-body); font-size: 0.85rem; font-weight: 500;
+  color: var(--text2); transition: all 0.2s;
+}
+.shift-tab.active { background: var(--blue); color: #fff; }
+.shift-tab-content { display: none; }
+.shift-tab-content.active { display: block; }
+
+/* ─── SHIFT ROSTER CARDS ─────────────────── */
+.shift-cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.shift-roster-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; position: relative; overflow: hidden;
+}
+.shift-roster-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.shift-morning::before { background: var(--orange); }
+.shift-afternoon::before { background: var(--blue); }
+.shift-night::before { background: var(--purple); }
+.shift-card-name {
+  font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 4px;
+}
+.shift-card-time { font-size: 0.82rem; color: var(--text3); margin-bottom: 14px; }
+.shift-card-employees { display: flex; flex-direction: column; gap: 6px; }
+.shift-emp-chip {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.82rem; padding: 6px 10px;
+  background: var(--bg3); border-radius: 6px;
+}
+.shift-emp-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--blue-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700; color: var(--blue);
+}
+
+/* ─── PATTERNS GRID ──────────────────────── */
+.patterns-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.pattern-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+}
+.pattern-title { font-family: var(--font-display); font-weight: 700; margin-bottom: 8px; }
+.pattern-days {
+  display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px;
+}
+.day-chip {
+  padding: 3px 8px; border-radius: 4px;
+  font-size: 0.72rem; font-weight: 600;
+}
+.day-on { background: var(--blue-dim); color: var(--blue); }
+.day-off { background: var(--red-dim); color: var(--red); }
+
+/* ─── PAYROLL ────────────────────────────── */
+.payroll-summary {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; margin-bottom: 20px;
+}
+.payroll-sum-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px;
+  text-align: center;
+}
+.payroll-sum-label { font-size: 0.75rem; color: var(--text3); font-weight: 600; }
+.payroll-sum-value {
+  font-family: var(--font-display); font-size: 1.4rem;
+  font-weight: 800; color: var(--text); margin-top: 4px;
+}
+
+/* ─── REPORTS ────────────────────────────── */
+.reports-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+.report-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; text-align: center;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.report-card:hover { transform: translateY(-2px); border-color: var(--border2); }
+.rpt-icon { font-size: 2rem; margin-bottom: 10px; }
+.rpt-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+.rpt-desc { font-size: 0.82rem; color: var(--text3); margin-bottom: 16px; }
+.report-output {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+}
+
+/* ─── SETTINGS ───────────────────────────── */
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.settings-form { display: flex; flex-direction: column; gap: 0; }
+.settings-note { font-size: 0.82rem; color: var(--text3); margin-bottom: 14px; }
+
+/* ─── RESPONSIVE ─────────────────────────── */
+@media (max-width: 1100px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .shift-cards-grid { grid-template-columns: repeat(2, 1fr); }
+  .payroll-summary { grid-template-columns: repeat(2, 1fr); }
+  .settings-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: none; }
+  .main-content { margin-left: 0; }
+  .menu-toggle { display: block; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .shift-cards-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .search-box { display: none; }
+  .reports-grid { grid-template-columns: 1fr; }
+  .patterns-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 500px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .page-container { padding: 14px; }
+}
+
+/* ─── SCROLLBAR ──────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+/* ─── EXTRAS ─────────────────────────────── */
+.empty-state {
+  text-align: center; padding: 40px;
+  color: var(--text3); font-size: 0.88rem;
+}
+.empty-state .empty-icon { font-size: 2rem; margin-bottom: 10px; }
+.action-buttons { display: flex; gap: 6px; }
+.status-dot {
+  display: inline-block; width: 7px; height: 7px;
+  border-radius: 50%; margin-right: 6px;
+}
+
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">⬡</div>
+    <span class="brand-name">ShiftPro</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">MAIN</div>
+    <a href="#" class="nav-item active" data-page="dashboard"><span class="nav-icon">◈</span><span>Dashboard</span></a>
+    <a href="#" class="nav-item" data-page="employees"><span class="nav-icon">◉</span><span>Employees</span></a>
+    <a href="#" class="nav-item" data-page="shifts"><span class="nav-icon">◷</span><span>Shift Manager</span></a>
+    <a href="#" class="nav-item" data-page="attendance"><span class="nav-icon">◻</span><span>Attendance</span></a>
+    <div class="nav-section-label">FINANCE</div>
+    <a href="#" class="nav-item" data-page="payroll"><span class="nav-icon">◈</span><span>Payroll</span></a>
+    <a href="#" class="nav-item" data-page="leaves"><span class="nav-icon">◑</span><span>Leave Requests</span></a>
+    <div class="nav-section-label">REPORTS</div>
+    <a href="#" class="nav-item" data-page="reports"><span class="nav-icon">◧</span><span>Reports</span></a>
+    <a href="#" class="nav-item" data-page="settings"><span class="nav-icon">◎</span><span>Settings</span></a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar">AD</div>
+    <div class="user-info">
+      <div class="user-name">Admin User</div>
+      <div class="user-role">HR Manager</div>
+    </div>
+  </div>
+</aside>
+
+<main class="main-content">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="page-title" id="pageTitle">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-box"><input type="text" placeholder="Search employees, shifts..." id="globalSearch"></div>
+      <button class="notif-btn" id="notifBtn">🔔 <span class="notif-badge">3</span></button>
+      <div class="date-display" id="currentDate"></div>
+    </div>
+  </header>
+
+  <div class="page-container">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card accent-blue"><div class="stat-label">Total Employees</div><div class="stat-value" id="stat-total">0</div><div class="stat-sub">↑ 3 this month</div></div>
+        <div class="stat-card accent-green"><div class="stat-label">Present Today</div><div class="stat-value" id="stat-present">0</div><div class="stat-sub" id="stat-attendance-pct">0% attendance</div></div>
+        <div class="stat-card accent-orange"><div class="stat-label">On Leave</div><div class="stat-value" id="stat-leave">0</div><div class="stat-sub">Pending approvals</div></div>
+        <div class="stat-card accent-purple"><div class="stat-label">Payroll This Month</div><div class="stat-value" id="stat-payroll">₹0</div><div class="stat-sub">Estimated</div></div>
+      </div>
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Today's Shift Overview</div><span class="badge badge-blue" id="today-shift-label">Loading...</span></div>
+          <div id="today-shifts-list" class="shift-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Recent Activity</div></div>
+          <div id="recent-activity" class="activity-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Attendance This Week</div></div>
+          <div class="mini-chart" id="weekChart"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Pending Leaves</div><span class="badge badge-orange" id="pending-leave-count">0</span></div>
+          <div id="pending-leaves-list" class="leave-mini-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPLOYEES -->
+    <div class="page" id="page-employees">
+      <div class="page-actions">
+        <div class="filters">
+          <select class="filter-select" id="deptFilter">
+            <option value="">All Departments</option>
+            <option value="Engineering">Engineering</option><option value="Sales">Sales</option>
+            <option value="HR">HR</option><option value="Operations">Operations</option><option value="Finance">Finance</option>
+          </select>
+          <select class="filter-select" id="shiftFilter">
+            <option value="">All Shifts</option>
+            <option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Night">Night</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="addEmployeeBtn">+ Add Employee</button>
+      </div>
+      <div class="table-card">
+        <table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Department</th><th>Role</th><th>Shift</th><th>Status</th><th>Salary/Day</th><th>Actions</th></tr></thead>
+        <tbody id="employeeTableBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- SHIFTS -->
+    <div class="page" id="page-shifts">
+      <div class="page-actions">
+        <div class="shift-tabs">
+          <button class="shift-tab active" data-tab="roster">Shift Roster</button>
+          <button class="shift-tab" data-tab="assign">Assign Shifts</button>
+          <button class="shift-tab" data-tab="patterns">Shift Patterns</button>
+        </div>
+        <button class="btn btn-primary" id="addShiftBtn">+ New Shift</button>
+      </div>
+      <div id="tab-roster" class="shift-tab-content active"><div class="shift-cards-grid" id="shiftRosterGrid"></div></div>
+      <div id="tab-assign" class="shift-tab-content">
+        <div class="table-card"><table class="data-table"><thead><tr><th>Employee</th><th>Current Shift</th><th>New Shift</th><th>Effective Date</th><th>Action</th></tr></thead><tbody id="assignShiftBody"></tbody></table></div>
+      </div>
+      <div id="tab-patterns" class="shift-tab-content"><div class="patterns-grid" id="patternsGrid"></div></div>
+    </div>
+
+    <!-- ATTENDANCE -->
+    <div class="page" id="page-attendance">
+      <div class="page-actions">
+        <div class="filters">
+          <input type="date" class="filter-select" id="attDateFilter">
+          <select class="filter-select" id="attShiftFilter">
+            <option value="">All Shifts</option>
+            <option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Night">Night</option>
+          </select>
+        </div>
+        <div class="attendance-actions">
+          <button class="btn btn-secondary" id="markAllPresentBtn">✓ Mark All Present</button>
+          <button class="btn btn-primary" id="exportAttendanceBtn">⬇ Export</button>
+        </div>
+      </div>
+      <div class="table-card"><table class="data-table"><thead><tr><th>Employee</th><th>Shift</th><th>Check In</th><th>Check Out</th><th>Hours</th><th>Status</th><th>Action</th></tr></thead><tbody id="attendanceTableBody"></tbody></table></div>
+    </div>
+
+    <!-- PAYROLL -->
+    <div class="page" id="page-payroll">
+      <div class="page-actions">
+        <div class="filters">
+          <select class="filter-select" id="payrollMonth">
+            <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+            <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+            <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+            <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+          </select>
+          <select class="filter-select" id="payrollYear"><option value="2025">2025</option><option value="2026">2026</option></select>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary" id="calcPayrollBtn">⟳ Calculate</button>
+          <button class="btn btn-primary" id="exportPayrollBtn">⬇ Export Payroll</button>
+        </div>
+      </div>
+      <div class="payroll-summary" id="payrollSummary"></div>
+      <div class="table-card"><table class="data-table"><thead><tr><th>Employee</th><th>Shift</th><th>Days Present</th><th>Days Absent</th><th>Overtime Hrs</th><th>Base Pay</th><th>Deductions</th><th>Net Pay</th><th>Status</th></tr></thead><tbody id="payrollTableBody"></tbody></table></div>
+    </div>
+
+    <!-- LEAVES -->
+    <div class="page" id="page-leaves">
+      <div class="page-actions">
+        <select class="filter-select" id="leaveStatusFilter">
+          <option value="">All Status</option><option value="Pending">Pending</option>
+          <option value="Approved">Approved</option><option value="Rejected">Rejected</option>
+        </select>
+        <button class="btn btn-primary" id="addLeaveBtn">+ Apply Leave</button>
+      </div>
+      <div class="table-card"><table class="data-table"><thead><tr><th>Employee</th><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead><tbody id="leaveTableBody"></tbody></table></div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="page" id="page-reports">
+      <div class="reports-grid">
+        <div class="report-card"><div class="rpt-icon">📊</div><div class="rpt-title">Attendance Report</div><div class="rpt-desc">Monthly attendance summary by shift and department</div><button class="btn btn-primary rpt-btn" data-report="attendance">Generate</button></div>
+        <div class="report-card"><div class="rpt-icon">💰</div><div class="rpt-title">Payroll Report</div><div class="rpt-desc">Salary breakdown, deductions and net pay summary</div><button class="btn btn-primary rpt-btn" data-report="payroll">Generate</button></div>
+        <div class="report-card"><div class="rpt-icon">🔄</div><div class="rpt-title">Shift Coverage Report</div><div class="rpt-desc">Shift-wise headcount and coverage analytics</div><button class="btn btn-primary rpt-btn" data-report="shifts">Generate</button></div>
+        <div class="report-card"><div class="rpt-icon">🏖️</div><div class="rpt-title">Leave Report</div><div class="rpt-desc">Leave utilization per employee and department</div><button class="btn btn-primary rpt-btn" data-report="leaves">Generate</button></div>
+      </div>
+      <div id="report-output" class="report-output" style="display:none"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="settings-grid">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Company Settings</div></div>
+          <div class="settings-form">
+            <div class="form-group"><label>Company Name</label><input class="form-input" id="companyName" value="ShiftPro Corp"></div>
+            <div class="form-group"><label>Working Hours/Day</label><input class="form-input" id="workHours" value="8" type="number"></div>
+            <div class="form-group"><label>Overtime Rate (multiplier)</label><input class="form-input" id="otRate" value="1.5" type="number" step="0.1"></div>
+            <div class="form-group"><label>Leave Days/Year</label><input class="form-input" id="leaveDays" value="24" type="number"></div>
+            <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Shift Timings</div></div>
+          <div class="settings-form" id="shiftTimingsForm"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Data Management</div></div>
+          <div class="settings-form">
+            <p class="settings-note">Export or reset all application data. Use with caution.</p>
+            <button class="btn btn-secondary" onclick="exportData()">⬇ Export All Data (JSON)</button>
+            <button class="btn btn-danger" onclick="resetData()">⚠ Reset All Data</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Modal</div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  ShiftPro — Employee Management System
+//  Complete Application Logic
+// ═══════════════════════════════════════════════════════════
+
+// ─── DATA STORE ─────────────────────────────────────────────
+let db = loadDB();
+
+function defaultDB() {
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = String(today.getMonth() + 1).padStart(2, '0');
+  const d = String(today.getDate()).padStart(2, '0');
+  const todayStr = `${y}-${m}-${d}`;
+
+  return {
+    settings: {
+      companyName: 'ShiftPro Corp',
+      workHours: 8,
+      otRate: 1.5,
+      leaveDays: 24,
+      shiftTimings: {
+        Morning:   { start: '06:00', end: '14:00' },
+        Afternoon: { start: '14:00', end: '22:00' },
+        Night:     { start: '22:00', end: '06:00' }
+      }
+    },
+    employees: [
+      { id: 'EMP001', name: 'Arjun Kumar',    dept: 'Engineering', role: 'Software Engineer', shift: 'Morning',   salaryPerDay: 2500, status: 'Active',   joinDate: '2023-01-10', phone: '9876543210', email: 'arjun@company.com' },
+      { id: 'EMP002', name: 'Priya Sharma',   dept: 'Engineering', role: 'QA Engineer',       shift: 'Afternoon', salaryPerDay: 2200, status: 'Active',   joinDate: '2023-03-15', phone: '9876543211', email: 'priya@company.com' },
+      { id: 'EMP003', name: 'Rohit Singh',    dept: 'Sales',       role: 'Sales Manager',     shift: 'Morning',   salaryPerDay: 2800, status: 'Active',   joinDate: '2022-11-01', phone: '9876543212', email: 'rohit@company.com' },
+      { id: 'EMP004', name: 'Meena Nair',     dept: 'HR',          role: 'HR Executive',      shift: 'Morning',   salaryPerDay: 2000, status: 'Active',   joinDate: '2023-06-20', phone: '9876543213', email: 'meena@company.com' },
+      { id: 'EMP005', name: 'Vikram Patel',   dept: 'Operations',  role: 'Operations Lead',   shift: 'Night',     salaryPerDay: 2600, status: 'Active',   joinDate: '2022-08-05', phone: '9876543214', email: 'vikram@company.com' },
+      { id: 'EMP006', name: 'Divya Rao',      dept: 'Finance',     role: 'Accountant',        shift: 'Morning',   salaryPerDay: 2100, status: 'Active',   joinDate: '2023-02-14', phone: '9876543215', email: 'divya@company.com' },
+      { id: 'EMP007', name: 'Suresh Babu',    dept: 'Engineering', role: 'DevOps Engineer',   shift: 'Night',     salaryPerDay: 2700, status: 'Active',   joinDate: '2022-09-30', phone: '9876543216', email: 'suresh@company.com' },
+      { id: 'EMP008', name: 'Kavitha Menon',  dept: 'Sales',       role: 'Sales Executive',   shift: 'Afternoon', salaryPerDay: 1900, status: 'Inactive', joinDate: '2023-04-11', phone: '9876543217', email: 'kavitha@company.com' },
+    ],
+    attendance: generateSampleAttendance(todayStr),
+    leaves: [
+      { id: 'L001', empId: 'EMP003', type: 'Sick Leave',   from: todayStr, to: todayStr, days: 1, reason: 'Fever',        status: 'Pending' },
+      { id: 'L002', empId: 'EMP006', type: 'Casual Leave', from: todayStr, to: todayStr, days: 1, reason: 'Personal work', status: 'Pending' },
+      { id: 'L003', empId: 'EMP002', type: 'Annual Leave', from: '2026-05-01', to: '2026-05-03', days: 3, reason: 'Vacation', status: 'Approved' },
+    ],
+    activity: [
+      { text: 'Arjun Kumar checked in (Morning shift)', time: '06:02 AM', color: 'var(--green)' },
+      { text: 'Leave request from Rohit Singh', time: '08:15 AM', color: 'var(--orange)' },
+      { text: 'Priya Sharma checked in (Afternoon shift)', time: '01:58 PM', color: 'var(--green)' },
+      { text: 'Payroll generated for March 2026', time: 'Yesterday', color: 'var(--blue)' },
+      { text: 'New employee: Suresh Babu added', time: '2 days ago', color: 'var(--purple)' },
+    ],
+    payrollHistory: {}
+  };
+}
+
+function generateSampleAttendance(todayStr) {
+  const empIds = ['EMP001','EMP002','EMP003','EMP004','EMP005','EMP006','EMP007','EMP008'];
+  const rec = {};
+  empIds.forEach(id => {
+    rec[`${todayStr}_${id}`] = {
+      date: todayStr, empId: id,
+      checkIn: id === 'EMP008' ? null : randomTime(6, 9),
+      checkOut: null,
+      status: id === 'EMP008' ? 'Absent' : (id === 'EMP003' ? 'On Leave' : 'Present'),
+      overtimeHrs: 0
+    };
+  });
+  return rec;
+}
+
+function randomTime(startHour, range) {
+  const h = startHour + Math.floor(Math.random() * range);
+  const min = Math.floor(Math.random() * 60);
+  return `${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`;
+}
+
+function loadDB() {
+  try {
+    const raw = localStorage.getItem('shiftpro_db');
+    return raw ? JSON.parse(raw) : defaultDB();
+  } catch { return defaultDB(); }
+}
+
+function saveDB() {
+  localStorage.setItem('shiftpro_db', JSON.stringify(db));
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────────
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const pg = document.getElementById('page-' + page);
+  if (pg) pg.classList.add('active');
+  const nav = document.querySelector(`.nav-item[data-page="${page}"]`);
+  if (nav) nav.classList.add('active');
+  document.getElementById('pageTitle').textContent = {
+    dashboard: 'Dashboard', employees: 'Employees', shifts: 'Shift Manager',
+    attendance: 'Attendance', payroll: 'Payroll', leaves: 'Leave Requests',
+    reports: 'Reports', settings: 'Settings'
+  }[page] || page;
+  closeSidebar();
+  renderPage(page);
+}
+
+function renderPage(page) {
+  switch(page) {
+    case 'dashboard':  renderDashboard(); break;
+    case 'employees':  renderEmployees(); break;
+    case 'shifts':     renderShifts(); break;
+    case 'attendance': renderAttendance(); break;
+    case 'payroll':    renderPayroll(); break;
+    case 'leaves':     renderLeaves(); break;
+    case 'reports':    break;
+    case 'settings':   renderSettings(); break;
+  }
+}
+
+// ─── DASHBOARD ───────────────────────────────────────────────
+function renderDashboard() {
+  const emp = db.employees;
+  const active = emp.filter(e => e.status === 'Active');
+  const todayStr = getTodayStr();
+  const att = Object.values(db.attendance).filter(a => a.date === todayStr);
+  const present = att.filter(a => a.status === 'Present').length;
+  const onLeave = att.filter(a => a.status === 'On Leave').length;
+  const pct = active.length ? Math.round((present / active.length) * 100) : 0;
+
+  document.getElementById('stat-total').textContent = active.length;
+  document.getElementById('stat-present').textContent = present;
+  document.getElementById('stat-leave').textContent = onLeave;
+  document.getElementById('stat-attendance-pct').textContent = `${pct}% attendance`;
+
+  // Payroll estimate
+  const monthTotal = active.reduce((s, e) => s + (e.salaryPerDay * 26), 0);
+  document.getElementById('stat-payroll').textContent = '₹' + formatNum(monthTotal);
+
+  // Today's shift overview
+  const shiftLabel = document.getElementById('today-shift-label');
+  const now = new Date();
+  const h = now.getHours();
+  let currentShift = h >= 6 && h < 14 ? 'Morning' : h >= 14 && h < 22 ? 'Afternoon' : 'Night';
+  shiftLabel.textContent = currentShift + ' Shift Active';
+  shiftLabel.className = 'badge ' + (currentShift === 'Morning' ? 'badge-orange' : currentShift === 'Afternoon' ? 'badge-blue' : 'badge-purple');
+
+  const shifts = ['Morning', 'Afternoon', 'Night'];
+  const shiftList = document.getElementById('today-shifts-list');
+  shiftList.innerHTML = '';
+  shifts.forEach(s => {
+    const count = active.filter(e => e.shift === s).length;
+    const times = db.settings.shiftTimings[s];
+    const colorMap = { Morning: 'var(--orange)', Afternoon: 'var(--blue)', Night: 'var(--purple)' };
+    shiftList.innerHTML += `
+      <div class="shift-item">
+        <div>
+          <div class="shift-item-name" style="color:${colorMap[s]}">${s} Shift</div>
+          <div class="shift-item-time">${times.start} – ${times.end}</div>
+        </div>
+        <span class="badge ${s==='Morning'?'badge-orange':s==='Afternoon'?'badge-blue':'badge-purple'}">${count} employees</span>
+      </div>`;
+  });
+
+  // Recent activity
+  const actEl = document.getElementById('recent-activity');
+  actEl.innerHTML = '';
+  db.activity.slice(0, 5).forEach(a => {
+    actEl.innerHTML += `
+      <div class="activity-item">
+        <div class="activity-dot" style="background:${a.color}"></div>
+        <div class="activity-text">${a.text}</div>
+        <div class="activity-time">${a.time}</div>
+      </div>`;
+  });
+
+  // Week chart
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const weekData = [88, 92, 85, 78, 95, 60, 30]; // sample %
+  const chart = document.getElementById('weekChart');
+  chart.innerHTML = '';
+  const max = Math.max(...weekData);
+  weekData.forEach((v, i) => {
+    const h = Math.max(8, (v / max) * 60);
+    chart.innerHTML += `
+      <div class="chart-bar-wrap">
+        <div class="chart-bar" style="height:${h}px;background:${v===max?'var(--blue)':'var(--blue-dim)'}"></div>
+        <div class="chart-label">${days[i]}</div>
+      </div>`;
+  });
+
+  // Pending leaves
+  const pending = db.leaves.filter(l => l.status === 'Pending');
+  document.getElementById('pending-leave-count').textContent = pending.length;
+  const leaveList = document.getElementById('pending-leaves-list');
+  leaveList.innerHTML = '';
+  if (!pending.length) {
+    leaveList.innerHTML = '<div class="empty-state"><div>No pending leaves 🎉</div></div>';
+  } else {
+    pending.slice(0, 3).forEach(l => {
+      const emp = db.employees.find(e => e.id === l.empId);
+      leaveList.innerHTML += `
+        <div class="leave-mini-item">
+          <div>
+            <div class="leave-mini-name">${emp ? emp.name : l.empId}</div>
+            <div class="leave-mini-date">${l.type} · ${l.days} day(s)</div>
+          </div>
+          <div style="display:flex;gap:4px;">
+            <button class="btn btn-success btn-sm" onclick="approveLeave('${l.id}')">✓</button>
+            <button class="btn btn-warn btn-sm" onclick="rejectLeave('${l.id}')">✕</button>
+          </div>
+        </div>`;
+    });
+  }
+}
+
+// ─── EMPLOYEES ───────────────────────────────────────────────
+function renderEmployees() {
+  const deptF = document.getElementById('deptFilter').value;
+  const shiftF = document.getElementById('shiftFilter').value;
+  const search = (document.getElementById('globalSearch').value || '').toLowerCase();
+  let emps = db.employees.filter(e => {
+    if (deptF && e.dept !== deptF) return false;
+    if (shiftF && e.shift !== shiftF) return false;
+    if (search && !e.name.toLowerCase().includes(search) && !e.id.toLowerCase().includes(search)) return false;
+    return true;
+  });
+  const tbody = document.getElementById('employeeTableBody');
+  if (!emps.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">👥</div>No employees found</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = emps.map(e => `
+    <tr>
+      <td><span style="font-family:var(--font-display);font-size:0.8rem;color:var(--blue)">${e.id}</span></td>
+      <td><strong>${e.name}</strong></td>
+      <td>${e.dept}</td>
+      <td style="color:var(--text3)">${e.role}</td>
+      <td><span class="badge ${e.shift==='Morning'?'badge-orange':e.shift==='Afternoon'?'badge-blue':'badge-purple'}">${e.shift}</span></td>
+      <td><span class="badge ${e.status==='Active'?'badge-green':'badge-red'}">${e.status}</span></td>
+      <td>₹${formatNum(e.salaryPerDay)}</td>
+      <td>
+        <div class="action-buttons">
+          <button class="btn btn-secondary btn-sm" onclick="editEmployee('${e.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteEmployee('${e.id}')">Del</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function addEmployee() {
+  openModal('Add New Employee', `
+    <div class="form-row">
+      <div class="form-group"><label>Employee ID</label><input class="form-input" id="f-id" placeholder="EMP009"></div>
+      <div class="form-group"><label>Full Name</label><input class="form-input" id="f-name" placeholder="Full Name"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Department</label>
+        <select class="form-select" id="f-dept">
+          <option>Engineering</option><option>Sales</option><option>HR</option>
+          <option>Operations</option><option>Finance</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Role / Designation</label><input class="form-input" id="f-role" placeholder="e.g. Software Engineer"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Shift</label>
+        <select class="form-select" id="f-shift">
+          <option>Morning</option><option>Afternoon</option><option>Night</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Salary Per Day (₹)</label><input class="form-input" id="f-salary" type="number" placeholder="2000"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Phone</label><input class="form-input" id="f-phone" placeholder="9876543210"></div>
+      <div class="form-group"><label>Email</label><input class="form-input" id="f-email" type="email" placeholder="email@company.com"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Join Date</label><input class="form-input" id="f-join" type="date"></div>
+      <div class="form-group"><label>Status</label>
+        <select class="form-select" id="f-status"><option>Active</option><option>Inactive</option></select>
+      </div>
+    </div>
+  `, [
+    { label: 'Cancel', cls: 'btn-secondary', action: closeModal },
+    { label: 'Add Employee', cls: 'btn-primary', action: saveEmployee }
+  ]);
+  document.getElementById('f-join').value = getTodayStr();
+}
+
+function saveEmployee() {
+  const id = v('f-id'), name = v('f-name'), dept = v('f-dept'), role = v('f-role'),
+    shift = v('f-shift'), salary = parseFloat(v('f-salary')), phone = v('f-phone'),
+    email = v('f-email'), join = v('f-join'), status = v('f-status');
+  if (!id || !name || !salary) return toast('Fill required fields', 'error');
+  if (db.employees.find(e => e.id === id)) return toast('Employee ID already exists', 'error');
+  db.employees.push({ id, name, dept, role, shift, salaryPerDay: salary, phone, email, joinDate: join, status });
+  db.activity.unshift({ text: `New employee added: ${name}`, time: 'Just now', color: 'var(--purple)' });
+  saveDB();
+  closeModal();
+  renderEmployees();
+  toast('Employee added successfully', 'success');
+}
+
+function editEmployee(id) {
+  const e = db.employees.find(x => x.id === id);
+  if (!e) return;
+  openModal('Edit Employee — ' + e.name, `
+    <div class="form-row">
+      <div class="form-group"><label>Full Name</label><input class="form-input" id="ef-name" value="${e.name}"></div>
+      <div class="form-group"><label>Role</label><input class="form-input" id="ef-role" value="${e.role}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Department</label>
+        <select class="form-select" id="ef-dept">
+          ${['Engineering','Sales','HR','Operations','Finance'].map(d=>`<option ${d===e.dept?'selected':''}>${d}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group"><label>Shift</label>
+        <select class="form-select" id="ef-shift">
+          ${['Morning','Afternoon','Night'].map(s=>`<option ${s===e.shift?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Salary/Day (₹)</label><input class="form-input" id="ef-salary" type="number" value="${e.salaryPerDay}"></div>
+      <div class="form-group"><label>Status</label>
+        <select class="form-select" id="ef-status">
+          <option ${e.status==='Active'?'selected':''}>Active</option>
+          <option ${e.status==='Inactive'?'selected':''}>Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Phone</label><input class="form-input" id="ef-phone" value="${e.phone}"></div>
+      <div class="form-group"><label>Email</label><input class="form-input" id="ef-email" value="${e.email}"></div>
+    </div>
+  `, [
+    { label: 'Cancel', cls: 'btn-secondary', action: closeModal },
+    { label: 'Save Changes', cls: 'btn-primary', action: () => {
+      e.name = v('ef-name'); e.role = v('ef-role'); e.dept = v('ef-dept');
+      e.shift = v('ef-shift'); e.salaryPerDay = parseFloat(v('ef-salary'));
+      e.status = v('ef-status'); e.phone = v('ef-phone'); e.email = v('ef-email');
+      saveDB(); closeModal(); renderEmployees(); toast('Employee updated', 'success');
+    }}
+  ]);
+}
+
+function deleteEmployee(id) {
+  const e = db.employees.find(x => x.id === id);
+  if (!e) return;
+  openModal('Confirm Delete', `<p>Are you sure you want to delete <strong>${e.name}</strong>? This cannot be undone.</p>`, [
+    { label: 'Cancel', cls: 'btn-secondary', action: closeModal },
+    { label: 'Delete', cls: 'btn-danger', action: () => {
+      db.employees = db.employees.filter(x => x.id !== id);
+      saveDB(); closeModal(); renderEmployees(); toast('Employee deleted', 'info');
+    }}
+  ]);
+}
+
+// ─── SHIFTS ──────────────────────────────────────────────────
+function renderShifts() {
+  renderShiftRoster();
+  renderAssignShift();
+  renderPatterns();
+}
+
+function renderShiftRoster() {
+  const grid = document.getElementById('shiftRosterGrid');
+  const shifts = ['Morning', 'Afternoon', 'Night'];
+  const colors = { Morning: 'shift-morning', Afternoon: 'shift-afternoon', Night: 'shift-night' };
+  grid.innerHTML = '';
+  shifts.forEach(s => {
+    const emps = db.employees.filter(e => e.shift === s && e.status === 'Active');
+    const times = db.settings.shiftTimings[s];
+    grid.innerHTML += `
+      <div class="shift-roster-card ${colors[s]}">
+        <div class="shift-card-name">${s} Shift</div>
+        <div class="shift-card-time">⏰ ${times.start} – ${times.end}</div>
+        <div class="shift-card-employees">
+          ${emps.length === 0 ? '<div style="color:var(--text3);font-size:0.82rem;">No employees assigned</div>' : ''}
+          ${emps.map(e => `
+            <div class="shift-emp-chip">
+              <div class="shift-emp-avatar">${initials(e.name)}</div>
+              <div>
+                <div style="font-weight:600;color:var(--text)">${e.name}</div>
+                <div style="font-size:0.72rem;color:var(--text3)">${e.role}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  });
+}
+
+function renderAssignShift() {
+  const tbody = document.getElementById('assignShiftBody');
+  tbody.innerHTML = db.employees.filter(e => e.status === 'Active').map(e => `
+    <tr>
+      <td><strong>${e.name}</strong><br><small style="color:var(--text3)">${e.dept}</small></td>
+      <td><span class="badge ${e.shift==='Morning'?'badge-orange':e.shift==='Afternoon'?'badge-blue':'badge-purple'}">${e.shift}</span></td>
+      <td>
+        <select class="filter-select" id="newshift-${e.id}">
+          <option value="">— No change —</option>
+          <option value="Morning">Morning</option>
+          <option value="Afternoon">Afternoon</option>
+          <option value="Night">Night</option>
+        </select>
+      </td>
+      <td><input type="date" class="filter-select" id="effdate-${e.id}" value="${getTodayStr()}"></td>
+      <td><button class="btn btn-primary btn-sm" onclick="assignShift('${e.id}')">Apply</button></td>
+    </tr>`).join('');
+}
+
+function assignShift(empId) {
+  const newShift = document.getElementById('newshift-' + empId).value;
+  if (!newShift) return toast('Select a shift to assign', 'error');
+  const emp = db.employees.find(e => e.id === empId);
+  const old = emp.shift;
+  emp.shift = newShift;
+  db.activity.unshift({ text: `${emp.name} reassigned from ${old} to ${newShift} shift`, time: 'Just now', color: 'var(--blue)' });
+  saveDB(); renderShifts(); toast(`${emp.name} moved to ${newShift} shift`, 'success');
+}
+
+function renderPatterns() {
+  const patterns = [
+    { name: '5-2 Standard', days: ['Mon','Tue','Wed','Thu','Fri'], off: ['Sat','Sun'] },
+    { name: '6-1 Weekend', days: ['Mon','Tue','Wed','Thu','Fri','Sat'], off: ['Sun'] },
+    { name: '4-3 Rotational', days: ['Mon','Tue','Wed','Thu'], off: ['Fri','Sat','Sun'] },
+    { name: '24/7 Shift Cycle', days: ['Day 1','Day 2','Day 3','Day 4'], off: ['Day 5','Day 6'] },
+  ];
+  const grid = document.getElementById('patternsGrid');
+  grid.innerHTML = patterns.map(p => `
+    <div class="pattern-card">
+      <div class="pattern-title">${p.name}</div>
+      <div class="pattern-days">
+        ${p.days.map(d => `<span class="day-chip day-on">${d}</span>`).join('')}
+        ${p.off.map(d => `<span class="day-chip day-off">${d} OFF</span>`).join('')}
+      </div>
+      <button class="btn btn-secondary btn-sm">Apply Pattern</button>
+    </div>`).join('');
+}
+
+// ─── ATTENDANCE ──────────────────────────────────────────────
+function renderAttendance() {
+  const dateF = document.getElementById('attDateFilter').value || getTodayStr();
+  const shiftF = document.getElementById('attShiftFilter').value;
+  document.getElementById('attDateFilter').value = dateF;
+
+  let emps = db.employees.filter(e => e.status === 'Active');
+  if (shiftF) emps = emps.filter(e => e.shift === shiftF);
+
+  const tbody = document.getElementById('attendanceTableBody');
+  if (!emps.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">No records</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = emps.map(emp => {
+    const key = `${dateF}_${emp.id}`;
+    const rec = db.attendance[key] || { date: dateF, empId: emp.id, checkIn: null, checkOut: null, status: 'Absent', overtimeHrs: 0 };
+    const hrs = calcHours(rec.checkIn, rec.checkOut, emp.shift);
+    const ot = Math.max(0, hrs - db.settings.workHours);
+    const statusColor = { Present: 'badge-green', Absent: 'badge-red', 'On Leave': 'badge-orange', Late: 'badge-purple' }[rec.status] || 'badge-gray';
+    return `
+      <tr>
+        <td><strong>${emp.name}</strong><br><small style="color:var(--text3)">${emp.id}</small></td>
+        <td><span class="badge ${emp.shift==='Morning'?'badge-orange':emp.shift==='Afternoon'?'badge-blue':'badge-purple'}">${emp.shift}</span></td>
+        <td>
+          <input type="time" class="filter-select" style="width:110px" value="${rec.checkIn||''}"
+            onchange="updateAtt('${key}','checkIn',this.value,'${emp.id}','${dateF}')">
+        </td>
+        <td>
+          <input type="time" class="filter-select" style="width:110px" value="${rec.checkOut||''}"
+            onchange="updateAtt('${key}','checkOut',this.value,'${emp.id}','${dateF}')">
+        </td>
+        <td>${hrs > 0 ? hrs.toFixed(1) + 'h' + (ot > 0 ? ` <small style="color:var(--orange)">(+${ot.toFixed(1)}OT)</small>` : '') : '—'}</td>
+        <td>
+          <select class="filter-select" style="width:110px" onchange="updateAttStatus('${key}','${emp.id}','${dateF}',this.value)">
+            ${['Present','Absent','On Leave','Late'].map(s => `<option ${s===rec.status?'selected':''}>${s}</option>`).join('')}
+          </select>
+        </td>
+        <td>
+          <button class="btn btn-secondary btn-sm" onclick="viewAttDetail('${emp.id}','${dateF}')">Details</button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function updateAtt(key, field, val, empId, date) {
+  if (!db.attendance[key]) db.attendance[key] = { date, empId, checkIn: null, checkOut: null, status: 'Present', overtimeHrs: 0 };
+  db.attendance[key][field] = val || null;
+  if (field === 'checkIn' && val && db.attendance[key].status === 'Absent') db.attendance[key].status = 'Present';
+  saveDB();
+}
+
+function updateAttStatus(key, empId, date, status) {
+  if (!db.attendance[key]) db.attendance[key] = { date, empId, checkIn: null, checkOut: null, status, overtimeHrs: 0 };
+  db.attendance[key].status = status;
+  saveDB(); toast('Status updated', 'success');
+}
+
+function markAllPresent() {
+  const dateF = document.getElementById('attDateFilter').value || getTodayStr();
+  db.employees.filter(e => e.status === 'Active').forEach(emp => {
+    const key = `${dateF}_${emp.id}`;
+    const times = db.settings.shiftTimings[emp.shift];
+    if (!db.attendance[key]) db.attendance[key] = { date: dateF, empId: emp.id, checkIn: null, checkOut: null, status: 'Present', overtimeHrs: 0 };
+    if (db.attendance[key].status !== 'On Leave') {
+      db.attendance[key].status = 'Present';
+      if (!db.attendance[key].checkIn) db.attendance[key].checkIn = times.start;
+    }
+  });
+  saveDB(); renderAttendance(); toast('All marked as Present', 'success');
+}
+
+function viewAttDetail(empId, date) {
+  const emp = db.employees.find(e => e.id === empId);
+  const key = `${date}_${empId}`;
+  const rec = db.attendance[key];
+  if (!rec || !emp) return;
+  const hrs = calcHours(rec.checkIn, rec.checkOut, emp.shift);
+  openModal('Attendance Detail — ' + emp.name, `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div><div style="color:var(--text3);font-size:0.78rem;margin-bottom:4px">EMPLOYEE</div><div style="font-weight:600">${emp.name}</div><div style="color:var(--text3);font-size:0.8rem">${emp.id}</div></div>
+      <div><div style="color:var(--text3);font-size:0.78rem;margin-bottom:4px">DATE</div><div style="font-weight:600">${date}</div></div>
+      <div><div style="color:var(--text3);font-size:0.78rem;margin-bottom:4px">SHIFT</div><div style="font-weight:600">${emp.shift}</div></div>
+      <div><div style="color:var(--text3);font-size:0.78rem;margin-bottom:4px">STATUS</div><span class="badge ${rec.status==='Present'?'badge-green':rec.status==='Absent'?'badge-red':'badge-orange'}">${rec.status}</span></div>
+      <div><div style="color:var(--text3);font-size:0.78rem;margin-bottom:4px">CHECK IN</div><div style="font-weight:600">${rec.checkIn||'—'}</div></div>
+      <div><div style="color:var(--text3);font-size:0.78rem;margin-bottom:4px">CHECK OUT</div><div style="font-weight:600">${rec.checkOut||'—'}</div></div>
+      <div><div style="color:var(--text3);font-size:0.78rem;margin-bottom:4px">HOURS WORKED</div><div style="font-weight:600">${hrs > 0 ? hrs.toFixed(2) + 'h' : '—'}</div></div>
+      <div><div style="color:var(--text3);font-size:0.78rem;margin-bottom:4px">OVERTIME</div><div style="font-weight:600;color:var(--orange)">${Math.max(0, hrs - db.settings.workHours).toFixed(2)}h</div></div>
+    </div>
+  `, [{ label: 'Close', cls: 'btn-secondary', action: closeModal }]);
+}
+
+// ─── PAYROLL ──────────────────────────────────────────────────
+function renderPayroll() {
+  const month = parseInt(document.getElementById('payrollMonth').value);
+  const year = parseInt(document.getElementById('payrollYear').value);
+  // Set current month
+  const now = new Date();
+  document.getElementById('payrollMonth').value = now.getMonth();
+  document.getElementById('payrollYear').value = now.getFullYear();
+  calcPayroll();
+}
+
+function calcPayroll() {
+  const month = parseInt(document.getElementById('payrollMonth').value);
+  const year = parseInt(document.getElementById('payrollYear').value);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const workDays = Math.floor(daysInMonth * 5 / 7); // approximate working days
+
+  const rows = db.employees.filter(e => e.status === 'Active').map(emp => {
+    // Count attendance for month
+    let present = 0, absent = 0, otHrs = 0;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const key = `${dateStr}_${emp.id}`;
+      const rec = db.attendance[key];
+      if (rec) {
+        if (rec.status === 'Present') {
+          present++;
+          const hrs = calcHours(rec.checkIn, rec.checkOut, emp.shift);
+          otHrs += Math.max(0, hrs - db.settings.workHours);
+        } else if (rec.status === 'Absent') {
+          absent++;
+        }
+      }
+    }
+    // If no attendance recorded, estimate
+    if (present === 0 && absent === 0) { present = workDays - 1; absent = 1; }
+
+    const basePay = emp.salaryPerDay * present;
+    const otPay = otHrs * (emp.salaryPerDay / db.settings.workHours) * db.settings.otRate;
+    const pf = Math.round(basePay * 0.12);
+    const tax = Math.round((basePay + otPay) * 0.05);
+    const deductions = pf + tax;
+    const netPay = Math.round(basePay + otPay - deductions);
+    return { emp, present, absent: workDays - present, otHrs, basePay, otPay, deductions, netPay, pf, tax };
+  });
+
+  // Summary cards
+  const totalGross = rows.reduce((s, r) => s + r.basePay + r.otPay, 0);
+  const totalNet = rows.reduce((s, r) => s + r.netPay, 0);
+  const totalDeductions = rows.reduce((s, r) => s + r.deductions, 0);
+  const totalOT = rows.reduce((s, r) => s + r.otPay, 0);
+
+  document.getElementById('payrollSummary').innerHTML = `
+    <div class="payroll-sum-card"><div class="payroll-sum-label">GROSS PAYROLL</div><div class="payroll-sum-value">₹${formatNum(totalGross)}</div></div>
+    <div class="payroll-sum-card"><div class="payroll-sum-label">TOTAL DEDUCTIONS</div><div class="payroll-sum-value" style="color:var(--red)">₹${formatNum(totalDeductions)}</div></div>
+    <div class="payroll-sum-card"><div class="payroll-sum-label">OVERTIME PAY</div><div class="payroll-sum-value" style="color:var(--orange)">₹${formatNum(totalOT)}</div></div>
+    <div class="payroll-sum-card"><div class="payroll-sum-label">NET PAYROLL</div><div class="payroll-sum-value" style="color:var(--green)">₹${formatNum(totalNet)}</div></div>
+  `;
+
+  const tbody = document.getElementById('payrollTableBody');
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td><strong>${r.emp.name}</strong><br><small style="color:var(--text3)">${r.emp.id}</small></td>
+      <td><span class="badge ${r.emp.shift==='Morning'?'badge-orange':r.emp.shift==='Afternoon'?'badge-blue':'badge-purple'}">${r.emp.shift}</span></td>
+      <td style="color:var(--green)">${r.present}</td>
+      <td style="color:var(--red)">${r.absent}</td>
+      <td style="color:var(--orange)">${r.otHrs.toFixed(1)}h</td>
+      <td>₹${formatNum(r.basePay + r.otPay)}</td>
+      <td style="color:var(--red)">₹${formatNum(r.deductions)}<br><small style="color:var(--text3)">PF:₹${formatNum(r.pf)} Tax:₹${formatNum(r.tax)}</small></td>
+      <td style="color:var(--green);font-weight:700">₹${formatNum(r.netPay)}</td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <span class="badge badge-green">Calculated</span>
+          <button class="btn btn-secondary btn-sm" onclick="viewPayslip('${r.emp.id}',${month},${year})">Slip</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function viewPayslip(empId, month, year) {
+  const emp = db.employees.find(e => e.id === empId);
+  if (!emp) return;
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const workDays = Math.floor(daysInMonth * 5 / 7);
+  let present = workDays - 1, otHrs = 2.5;
+  const basePay = emp.salaryPerDay * present;
+  const otPay = Math.round(otHrs * (emp.salaryPerDay / 8) * 1.5);
+  const pf = Math.round(basePay * 0.12);
+  const tax = Math.round((basePay + otPay) * 0.05);
+  const netPay = basePay + otPay - pf - tax;
+
+  openModal('Payslip — ' + months[month] + ' ' + year, `
+    <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+      <div style="background:var(--blue-dim);padding:16px;border-bottom:1px solid var(--border)">
+        <div style="font-family:var(--font-display);font-size:1rem;font-weight:700">${db.settings.companyName}</div>
+        <div style="font-size:0.8rem;color:var(--text3)">Pay Slip for ${months[month]} ${year}</div>
+      </div>
+      <div style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:0.85rem">
+        <div><span style="color:var(--text3)">Employee:</span> <strong>${emp.name}</strong></div>
+        <div><span style="color:var(--text3)">ID:</span> <strong>${emp.id}</strong></div>
+        <div><span style="color:var(--text3)">Department:</span> ${emp.dept}</div>
+        <div><span style="color:var(--text3)">Shift:</span> ${emp.shift}</div>
+        <div><span style="color:var(--text3)">Days Present:</span> <span style="color:var(--green)">${present}</span></div>
+        <div><span style="color:var(--text3)">Overtime:</span> <span style="color:var(--orange)">${otHrs}h</span></div>
+      </div>
+      <div style="padding:0 16px 16px">
+        <table style="width:100%;font-size:0.85rem">
+          <tr style="color:var(--text3);font-size:0.75rem"><th style="text-align:left;padding:6px 0">EARNINGS</th><th style="text-align:right">AMOUNT</th></tr>
+          <tr><td style="padding:4px 0;color:var(--text)">Basic Pay (${present} days)</td><td style="text-align:right;color:var(--green)">₹${formatNum(basePay)}</td></tr>
+          <tr><td style="padding:4px 0;color:var(--text)">Overtime Pay</td><td style="text-align:right;color:var(--orange)">₹${formatNum(otPay)}</td></tr>
+          <tr style="color:var(--text3);font-size:0.75rem"><th style="text-align:left;padding:10px 0 4px">DEDUCTIONS</th><th></th></tr>
+          <tr><td style="padding:4px 0;color:var(--text)">Provident Fund (12%)</td><td style="text-align:right;color:var(--red)">-₹${formatNum(pf)}</td></tr>
+          <tr><td style="padding:4px 0;color:var(--text)">Income Tax (5%)</td><td style="text-align:right;color:var(--red)">-₹${formatNum(tax)}</td></tr>
+          <tr style="border-top:1px solid var(--border)"><td style="padding:10px 0 0;font-weight:700;font-family:var(--font-display)">NET PAY</td><td style="text-align:right;padding-top:10px;font-weight:800;font-size:1.1rem;color:var(--green)">₹${formatNum(netPay)}</td></tr>
+        </table>
+      </div>
+    </div>
+  `, [
+    { label: 'Close', cls: 'btn-secondary', action: closeModal },
+    { label: '⬇ Download', cls: 'btn-primary', action: () => { toast('Payslip downloaded (simulation)', 'success'); closeModal(); } }
+  ]);
+}
+
+// ─── LEAVES ──────────────────────────────────────────────────
+function renderLeaves() {
+  const statusF = document.getElementById('leaveStatusFilter').value;
+  let leaves = db.leaves;
+  if (statusF) leaves = leaves.filter(l => l.status === statusF);
+  const tbody = document.getElementById('leaveTableBody');
+  if (!leaves.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">🏖️</div>No leave records found</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = leaves.map(l => {
+    const emp = db.employees.find(e => e.id === l.empId);
+    const sc = l.status === 'Approved' ? 'badge-green' : l.status === 'Rejected' ? 'badge-red' : 'badge-orange';
+    return `
+      <tr>
+        <td><strong>${emp ? emp.name : l.empId}</strong></td>
+        <td>${l.type}</td>
+        <td>${l.from}</td>
+        <td>${l.to}</td>
+        <td>${l.days}</td>
+        <td style="color:var(--text3)">${l.reason}</td>
+        <td><span class="badge ${sc}">${l.status}</span></td>
+        <td>
+          <div class="action-buttons">
+            ${l.status === 'Pending' ? `
+              <button class="btn btn-success btn-sm" onclick="approveLeave('${l.id}')">Approve</button>
+              <button class="btn btn-warn btn-sm" onclick="rejectLeave('${l.id}')">Reject</button>` : ''}
+            <button class="btn btn-danger btn-sm" onclick="deleteLeave('${l.id}')">Del</button>
+          </div>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function addLeave() {
+  openModal('Apply Leave', `
+    <div class="form-group"><label>Employee</label>
+      <select class="form-select" id="lf-emp">
+        ${db.employees.filter(e=>e.status==='Active').map(e=>`<option value="${e.id}">${e.name} (${e.id})</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Leave Type</label>
+        <select class="form-select" id="lf-type">
+          <option>Sick Leave</option><option>Casual Leave</option><option>Annual Leave</option><option>Emergency Leave</option>
+        </select>
+      </div>
+      <div class="form-group"><label>From Date</label><input class="form-input" type="date" id="lf-from"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>To Date</label><input class="form-input" type="date" id="lf-to"></div>
+      <div class="form-group"><label>No. of Days</label><input class="form-input" type="number" id="lf-days" value="1" min="1"></div>
+    </div>
+    <div class="form-group"><label>Reason</label><textarea class="form-textarea" id="lf-reason" placeholder="Reason for leave..."></textarea></div>
+  `, [
+    { label: 'Cancel', cls: 'btn-secondary', action: closeModal },
+    { label: 'Submit', cls: 'btn-primary', action: () => {
+      const empId = v('lf-emp'), type = v('lf-type'), from = v('lf-from'), to = v('lf-to'), days = parseInt(v('lf-days')), reason = v('lf-reason');
+      if (!from || !to || !reason) return toast('Fill all fields', 'error');
+      const id = 'L' + String(db.leaves.length + 1).padStart(3, '0');
+      db.leaves.push({ id, empId, type, from, to, days, reason, status: 'Pending' });
+      const emp = db.employees.find(e => e.id === empId);
+      db.activity.unshift({ text: `Leave request from ${emp ? emp.name : empId}`, time: 'Just now', color: 'var(--orange)' });
+      saveDB(); closeModal(); renderLeaves(); toast('Leave request submitted', 'success');
+    }}
+  ]);
+  document.getElementById('lf-from').value = getTodayStr();
+  document.getElementById('lf-to').value = getTodayStr();
+}
+
+function approveLeave(id) {
+  const l = db.leaves.find(x => x.id === id);
+  if (!l) return;
+  l.status = 'Approved';
+  // Mark attendance as On Leave
+  const emp = db.employees.find(e => e.id === l.empId);
+  const from = new Date(l.from), to = new Date(l.to);
+  for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+    const ds = d.toISOString().split('T')[0];
+    const key = `${ds}_${l.empId}`;
+    if (!db.attendance[key]) db.attendance[key] = { date: ds, empId: l.empId, checkIn: null, checkOut: null, status: 'On Leave', overtimeHrs: 0 };
+    else db.attendance[key].status = 'On Leave';
+  }
+  db.activity.unshift({ text: `Leave approved for ${emp ? emp.name : l.empId}`, time: 'Just now', color: 'var(--green)' });
+  saveDB(); renderLeaves(); renderDashboard(); toast('Leave approved', 'success');
+}
+
+function rejectLeave(id) {
+  const l = db.leaves.find(x => x.id === id);
+  if (!l) return;
+  l.status = 'Rejected';
+  saveDB(); renderLeaves(); toast('Leave rejected', 'info');
+}
+
+function deleteLeave(id) {
+  db.leaves = db.leaves.filter(x => x.id !== id);
+  saveDB(); renderLeaves(); toast('Leave record deleted', 'info');
+}
+
+// ─── REPORTS ─────────────────────────────────────────────────
+function generateReport(type) {
+  const out = document.getElementById('report-output');
+  out.style.display = 'block';
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const now = new Date();
+  const header = `<div class="card-header" style="margin-bottom:16px">
+    <div class="card-title">📊 ${type.charAt(0).toUpperCase()+type.slice(1)} Report — ${months[now.getMonth()]} ${now.getFullYear()}</div>
+    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('report-output').style.display='none'">✕ Close</button>
+  </div>`;
+
+  if (type === 'attendance') {
+    const today = getTodayStr();
+    const att = Object.values(db.attendance).filter(a => a.date === today);
+    const counts = { Present: 0, Absent: 0, 'On Leave': 0, Late: 0 };
+    att.forEach(a => { if (counts[a.status] !== undefined) counts[a.status]++; });
+    out.innerHTML = header + `
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+        ${Object.entries(counts).map(([k,v]) => `<div class="payroll-sum-card"><div class="payroll-sum-label">${k.toUpperCase()}</div><div class="payroll-sum-value">${v}</div></div>`).join('')}
+      </div>
+      <div class="table-card">
+        <table class="data-table">
+          <thead><tr><th>Employee</th><th>Department</th><th>Shift</th><th>Status</th><th>Check In</th></tr></thead>
+          <tbody>
+            ${db.employees.filter(e=>e.status==='Active').map(emp => {
+              const rec = att.find(a => a.empId === emp.id);
+              const sc = rec ? (rec.status==='Present'?'badge-green':rec.status==='Absent'?'badge-red':'badge-orange') : 'badge-gray';
+              return `<tr><td><strong>${emp.name}</strong></td><td>${emp.dept}</td><td>${emp.shift}</td><td><span class="badge ${sc}">${rec ? rec.status : 'No Record'}</span></td><td>${rec && rec.checkIn ? rec.checkIn : '—'}</td></tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  } else if (type === 'payroll') {
+    const total = db.employees.filter(e=>e.status==='Active').reduce((s,e)=>s+e.salaryPerDay*26,0);
+    out.innerHTML = header + `
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
+        <div class="payroll-sum-card"><div class="payroll-sum-label">EMPLOYEES</div><div class="payroll-sum-value">${db.employees.filter(e=>e.status==='Active').length}</div></div>
+        <div class="payroll-sum-card"><div class="payroll-sum-label">GROSS</div><div class="payroll-sum-value">₹${formatNum(total)}</div></div>
+        <div class="payroll-sum-card"><div class="payroll-sum-label">NET (after deductions)</div><div class="payroll-sum-value" style="color:var(--green)">₹${formatNum(Math.round(total*0.83))}</div></div>
+      </div>
+      <div class="table-card">
+        <table class="data-table">
+          <thead><tr><th>Employee</th><th>Shift</th><th>Salary/Day</th><th>Estimated Monthly</th></tr></thead>
+          <tbody>${db.employees.filter(e=>e.status==='Active').map(e=>`<tr><td><strong>${e.name}</strong></td><td>${e.shift}</td><td>₹${formatNum(e.salaryPerDay)}</td><td style="color:var(--green)">₹${formatNum(e.salaryPerDay*26)}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>`;
+  } else if (type === 'shifts') {
+    const shifts = ['Morning','Afternoon','Night'];
+    out.innerHTML = header + `
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        ${shifts.map(s => {
+          const emps = db.employees.filter(e=>e.shift===s&&e.status==='Active');
+          return `<div class="stat-card ${s==='Morning'?'accent-orange':s==='Afternoon'?'accent-blue':'accent-purple'}">
+            <div class="stat-label">${s} Shift</div>
+            <div class="stat-value">${emps.length}</div>
+            <div class="stat-sub">${db.settings.shiftTimings[s].start} – ${db.settings.shiftTimings[s].end}</div>
+          </div>`;
+        }).join('')}
+      </div>`;
+  } else if (type === 'leaves') {
+    const total = db.leaves.length;
+    const approved = db.leaves.filter(l=>l.status==='Approved').length;
+    out.innerHTML = header + `
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
+        <div class="payroll-sum-card"><div class="payroll-sum-label">TOTAL REQUESTS</div><div class="payroll-sum-value">${total}</div></div>
+        <div class="payroll-sum-card"><div class="payroll-sum-label">APPROVED</div><div class="payroll-sum-value" style="color:var(--green)">${approved}</div></div>
+        <div class="payroll-sum-card"><div class="payroll-sum-label">PENDING</div><div class="payroll-sum-value" style="color:var(--orange)">${db.leaves.filter(l=>l.status==='Pending').length}</div></div>
+      </div>`;
+  }
+  out.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ─── SETTINGS ────────────────────────────────────────────────
+function renderSettings() {
+  const s = db.settings;
+  document.getElementById('companyName').value = s.companyName;
+  document.getElementById('workHours').value = s.workHours;
+  document.getElementById('otRate').value = s.otRate;
+  document.getElementById('leaveDays').value = s.leaveDays;
+
+  const form = document.getElementById('shiftTimingsForm');
+  form.innerHTML = '';
+  ['Morning','Afternoon','Night'].forEach(sh => {
+    form.innerHTML += `
+      <div style="margin-bottom:14px">
+        <div style="font-size:0.82rem;font-weight:700;color:var(--text2);margin-bottom:8px">${sh} Shift</div>
+        <div class="form-row">
+          <div class="form-group"><label>Start</label><input class="form-input" type="time" id="st-${sh}" value="${s.shiftTimings[sh].start}"></div>
+          <div class="form-group"><label>End</label><input class="form-input" type="time" id="et-${sh}" value="${s.shiftTimings[sh].end}"></div>
+        </div>
+      </div>`;
+  });
+  form.innerHTML += `<button class="btn btn-primary" onclick="saveShiftTimings()">Save Timings</button>`;
+}
+
+function saveSettings() {
+  db.settings.companyName = document.getElementById('companyName').value;
+  db.settings.workHours = parseFloat(document.getElementById('workHours').value);
+  db.settings.otRate = parseFloat(document.getElementById('otRate').value);
+  db.settings.leaveDays = parseInt(document.getElementById('leaveDays').value);
+  saveDB(); toast('Settings saved', 'success');
+}
+
+function saveShiftTimings() {
+  ['Morning','Afternoon','Night'].forEach(sh => {
+    db.settings.shiftTimings[sh].start = document.getElementById('st-' + sh).value;
+    db.settings.shiftTimings[sh].end = document.getElementById('et-' + sh).value;
+  });
+  saveDB(); toast('Shift timings updated', 'success');
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'shiftpro_data.json'; a.click();
+  toast('Data exported', 'success');
+}
+
+function resetData() {
+  openModal('Reset All Data', `<p style="color:var(--red)">⚠️ This will delete all employees, attendance, payroll and leave records. This action cannot be undone!</p>`, [
+    { label: 'Cancel', cls: 'btn-secondary', action: closeModal },
+    { label: '⚠ Reset', cls: 'btn-danger', action: () => {
+      db = defaultDB(); saveDB(); closeModal();
+      toast('All data reset', 'info');
+      navigate('dashboard');
+    }}
+  ]);
+}
+
+// ─── MODAL HELPERS ────────────────────────────────────────────
+function openModal(title, body, buttons = []) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = body;
+  const footer = document.getElementById('modalFooter');
+  footer.innerHTML = '';
+  buttons.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'btn ' + b.cls;
+    btn.textContent = b.label;
+    btn.onclick = b.action;
+    footer.appendChild(btn);
+  });
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+// ─── TOAST ────────────────────────────────────────────────────
+function toast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
+// ─── UTILITIES ───────────────────────────────────────────────
+function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function getTodayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function initials(name) {
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+}
+function formatNum(n) {
+  return Math.round(n).toLocaleString('en-IN');
+}
+function calcHours(checkIn, checkOut, shift) {
+  if (!checkIn || !checkOut) return 0;
+  const [ih, im] = checkIn.split(':').map(Number);
+  const [oh, om] = checkOut.split(':').map(Number);
+  let diff = (oh * 60 + om) - (ih * 60 + im);
+  if (diff < 0) diff += 24 * 60; // cross-midnight
+  return diff / 60;
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Date display
+  const dateEl = document.getElementById('currentDate');
+  const now = new Date();
+  dateEl.textContent = now.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+
+  // Navigation
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      navigate(item.dataset.page);
+    });
+  });
+
+  // Modal close
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  });
+
+  // Menu toggle
+  document.getElementById('menuToggle').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+  });
+
+  // Add Employee btn
+  document.getElementById('addEmployeeBtn').addEventListener('click', addEmployee);
+
+  // Add Shift btn
+  document.getElementById('addShiftBtn').addEventListener('click', () => {
+    openModal('Add New Shift Pattern', `
+      <div class="form-group"><label>Shift Name</label><input class="form-input" id="ns-name" placeholder="e.g. Split Shift"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Start Time</label><input class="form-input" type="time" id="ns-start"></div>
+        <div class="form-group"><label>End Time</label><input class="form-input" type="time" id="ns-end"></div>
+      </div>
+    `, [
+      { label: 'Cancel', cls: 'btn-secondary', action: closeModal },
+      { label: 'Add Shift', cls: 'btn-primary', action: () => { toast('Custom shift patterns coming soon!', 'info'); closeModal(); } }
+    ]);
+  });
+
+  // Attendance actions
+  document.getElementById('markAllPresentBtn').addEventListener('click', markAllPresent);
+  document.getElementById('exportAttendanceBtn').addEventListener('click', () => {
+    toast('Attendance export in progress...', 'info');
+    setTimeout(() => { exportData(); }, 500);
+  });
+
+  // Payroll calc btn
+  document.getElementById('calcPayrollBtn').addEventListener('click', calcPayroll);
+  document.getElementById('exportPayrollBtn').addEventListener('click', () => {
+    toast('Payroll exported successfully', 'success');
+    setTimeout(exportData, 300);
+  });
+
+  // Leave buttons
+  document.getElementById('addLeaveBtn').addEventListener('click', addLeave);
+  document.getElementById('leaveStatusFilter').addEventListener('change', renderLeaves);
+
+  // Attendance filters
+  document.getElementById('attDateFilter').addEventListener('change', renderAttendance);
+  document.getElementById('attShiftFilter').addEventListener('change', renderAttendance);
+
+  // Employee filters
+  document.getElementById('deptFilter').addEventListener('change', renderEmployees);
+  document.getElementById('shiftFilter').addEventListener('change', renderEmployees);
+
+  // Global search
+  document.getElementById('globalSearch').addEventListener('input', () => {
+    const currentPage = document.querySelector('.nav-item.active')?.dataset.page;
+    if (currentPage === 'employees') renderEmployees();
+  });
+
+  // Shift tabs
+  document.querySelectorAll('.shift-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.shift-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.shift-tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // Report buttons
+  document.querySelectorAll('.rpt-btn').forEach(btn => {
+    btn.addEventListener('click', () => generateReport(btn.dataset.report));
+  });
+
+  // Payroll month/year change
+  document.getElementById('payrollMonth').addEventListener('change', calcPayroll);
+  document.getElementById('payrollYear').addEventListener('change', calcPayroll);
+
+  // Initial render
+  navigate('dashboard');
+});
+
+</script>
+</body>
+</html>
